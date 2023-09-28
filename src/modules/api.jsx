@@ -1,6 +1,7 @@
 import axios from 'axios';
-import jwtDecode from 'jsonwebtoken/decode';
+import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+
 
 // API의 기본 URL 설정
 const baseURL = `http://127.0.0.1:8000/chatbot/api/chat/`;
@@ -61,5 +62,5 @@ export const useApi = () => {
   return {
     apiPost,
     checkTokenExpiration
-  };
+  };  
 }

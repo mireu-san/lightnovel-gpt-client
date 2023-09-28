@@ -1,62 +1,52 @@
 import { useState } from 'react';
+import { useApi } from './api';
 
 const Questionnaire = () => {
-  // 각 input의 값을 관리하는 state
   const [inputValues, setInputValues] = useState({
     input1: '',
     input2: '',
     input3: '',
   });
-  // 각 input의 값을 관리하는 state
   const [isLoading, setIsLoading] = useState(false);
-  // 버튼이 클릭되었는지 여부를 관리하는 state
-  const [buttonClicked, setButtonClicked] = useState(false);
-  // 입력 값의 유효성을 검사하는 함수
-  const checkInputs = () => {
-    if (buttonClicked) return;
-    // 모든 input 값들이 비어있지 않은지 확인
-    const isValid = Object.values(inputValues).every((value) => value.trim() !== '');
-    // 유효하지 않은 경우 로딩 상태 설정
-    setIsLoading(!isValid);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isIncomplete, setIsIncomplete] = useState(false);
+  const { apiPost } = useApi();
 
-    return isValid;
-  };
-
-  // input 값이 변경될 때 호출되는 함수
   const handleInputChange = (e) => {
     const { id, value } = e.target;
-    // 변경된 input 값 설정
     setInputValues((prevValues) => ({
       ...prevValues,
       [id]: value,
     }));
-    // 입력 값 유효성 검사
-    checkInputs();
   };
 
-  // 폼 제출 시 호출되는 함수
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 로딩 중이라면 제출 방지
-    if (isLoading) return;
-
-    // 버튼 클릭 상태로 설정
-    setButtonClicked(true);
-    // 로딩 상태로 설정
+    setIsSubmitted(true);
+    
+    if (!inputValues.input1 || !inputValues.input2 || !inputValues.input3) {
+      setIsIncomplete(true);
+      return;
+    }
+    
+    setIsIncomplete(false);
     setIsLoading(true);
 
-    setTimeout(() => {
-      // 입력 값이 유효한 경우 input 초기화
-      if (checkInputs()) {
-        setInputValues({
-          input1: '',
-          input2: '',
-          input3: '',
-        });
-      }
-      // 버튼 클릭 상태 해제
-      setButtonClicked(false);
-    }, 0);
+    try {
+      const combinedQuestion = `${inputValues.input1}. ${inputValues.input2}. ${inputValues.input3}.`;
+      const apiResult = await apiPost(combinedQuestion);
+      console.log("서버로부터 받은 응답:", apiResult);
+      
+      setInputValues({
+        input1: '',
+        input2: '',
+        input3: '',
+      });
+    } catch (err) {
+      console.log("API 호출 중 문제 발생. 확인해주세요.", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -94,8 +84,8 @@ const Questionnaire = () => {
         </button>
         <p>
           {isLoading
-            ? "모든 칸의 내용을 채워 주셔야 합니다!"
-            : "잠시만 기다려주세요..."}
+            ? "잠시만 기다려주세요..."
+            : (isSubmitted && isIncomplete) && "모든 칸의 내용을 채워 주셔야 합니다!"}
         </p>
       </div>
       <div id="loadingSvg" className="loading-svg">
