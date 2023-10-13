@@ -13,7 +13,7 @@ const SignUp = () => {
     // 회원가입 처리를 위한 함수
     const handleSignUp = () => {
         // 회원가입 API에 POST 요청을 보냄
-        axios.post('http://127.0.0.1:8000/users/', {
+        axios.post('http://localhost/users/', {
                 username: username,
                 password: password
         })

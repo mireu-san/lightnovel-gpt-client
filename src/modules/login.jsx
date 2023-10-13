@@ -13,7 +13,7 @@ const Login = () => {
     // 로그인을 처리하기 위한 핸들러 함수
     const handleLogin = () => {
         // 로그인 엔드포인트로 POST 요청을 보냄
-        axios.post('http://127.0.0.1:8000/api/token/', {
+        axios.post('http://localhost/api/token/', {
                 username: username,
                 password: password
         })

@@ -208,3 +208,12 @@ body {
   #loadingSvg {
     display: none;
   }
+
+  /* questionnaire.jsx */
+  .wrapperAnswer .prompt {
+    color: white;
+  }
+
+  .wrapperAnswer .response {
+    color: cyan;
+  }

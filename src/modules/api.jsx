@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 // API의 기본 URL 설정
-const baseURL = `http://127.0.0.1:8000/chatbot/api/chat/`;
+const baseURL = `http://localhost/chatbot/api/chat/`;
 
 // 커스텀 훅 정의
 export const useApi = () => {
@@ -14,14 +14,14 @@ export const useApi = () => {
   // API에 POST 요청을 보내는 함수
   const apiPost = async (data) => {
     // 로컬 스토리지에서 토큰을 가져옴
-    const token = localStorage.getItem('access_token');
+    // const token = localStorage.getItem('access_token');
 
     try {
       // axios를 사용하여 API에 POST 요청
       const result = await axios.post(baseURL, JSON.stringify(data), {
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          // "Authorization": `Bearer ${token}`,
         },
         maxBodyLength: Infinity,
       });
