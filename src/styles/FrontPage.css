@@ -217,3 +217,28 @@ body {
   .wrapperAnswer .response {
     color: cyan;
   }
+
+  /* FrontPage */
+  .frontPage-login,
+.frontPage-signUp {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #000;
+    background-color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.frontPage-login:hover,
+.frontPage-signUp:hover {
+    background-color: #eee;
+}
+
+.Front_Header {
+    text-align: center;
+}

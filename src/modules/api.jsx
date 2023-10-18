@@ -14,14 +14,13 @@ export const useApi = () => {
   // API에 POST 요청을 보내는 함수
   const apiPost = async (data) => {
     // 로컬 스토리지에서 토큰을 가져옴
-    // const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('access_token');
 
     try {
-      // axios를 사용하여 API에 POST 요청
       const result = await axios.post(baseURL, JSON.stringify(data), {
         headers: {
           "Content-Type": "application/json",
-          // "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
         maxBodyLength: Infinity,
       });
@@ -38,25 +37,38 @@ export const useApi = () => {
   };
 
   // JWT 토큰의 유효성을 확인하는 함수
-  const checkTokenExpiration = () => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-        console.log("No access_token found in localStorage.");
+  const checkTokenExpiration = async () => {
+    const accessToken = localStorage.getItem('access_token');
+    const refreshToken = localStorage.getItem('refresh_token');
+
+    if (!accessToken || !refreshToken) {
+        console.log("No access_token or refresh_token found in localStorage.");
         return;
     }
 
-    // jwtDecode를 사용하여 토큰 디코드
-    const decodedToken = jwtDecode(token);
+    const decodedToken = jwtDecode(accessToken);
     const expirationDate = new Date(decodedToken.exp * 1000);
     const now = new Date();
 
-    // 토큰의 유효 기간을 확인
     if (now > expirationDate) {
-        console.log("Token has expired.");
+        console.log("Token has expired. Trying to refresh...");
+
+        try {
+            const response = await axios.post('http://localhost/users/api/token/refresh/', {
+                refresh: refreshToken
+            });
+            
+            localStorage.setItem('access_token', response.data.access);
+            console.log("Token refreshed successfully.");
+
+        } catch (error) {
+            console.log("Error refreshing token:", error);
+            navigate('/login');  // Redirect to login page if token refresh fails
+        }
     } else {
         console.log("Token is still valid. Expires at:", expirationDate);
     }
-  }
+}
 
   // apiPost와 checkTokenExpiration 함수를 반환
   return {

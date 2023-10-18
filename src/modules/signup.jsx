@@ -1,46 +1,50 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import '../styles/signUp.css';
 
-const SignUp = () => {
-    // 사용자 이름과 비밀번호를 저장하기 위한 상태
+const Signup = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    
-    // 네비게이션을 위한 훅
-    const navigate = useNavigate();
 
-    // 회원가입 처리를 위한 함수
-    const handleSignUp = () => {
-        // 회원가입 API에 POST 요청을 보냄
-        axios.post('http://localhost/users/', {
-                username: username,
-                password: password
+    const handleSignup = () => {
+        axios.post('http://localhost/users/signup/', {
+            username: username,
+            password: password
+        }, {
+            headers: {
+                "Content-Type": "application/json",  // Add this line
+            }
         })
         .then(() => {
-                // 회원가입 성공 알림 메시지 표시 후 로그인 페이지로 이동
-                alert('회원가입이 성공적으로 완료되었습니다! 로그인 페이지로 이동합니다...');
-                navigate('/login');
+            alert('Signup successful, please check your email for a verification link.');
         })
-        .catch(() => {
-                // 회원가입 실패 알림 메시지 표시
-                alert('회원가입에 실패하였습니다');
+        .catch((error) => {
+            if (error.response && error.response.data) {
+                if (error.response.data.error === 'user_exists') {
+                    alert('이미 등록된 유저입니다.');
+                } else {
+                    alert('입력하신 정보를 확인해주세요.');  // Updated error message
+                }
+            } else {
+                alert('Signup failed');
+            }
         });
     };
+    
 
     return (
-        <div>
+        <div className="signup-container">
             <label>
-                사용자 이름:
+                Username:
                 <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
             </label>
             <label>
-                비밀번호:
+                Password:
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             </label>
-            <button onClick={handleSignUp}>회원가입</button>
+            <button onClick={handleSignup}>Sign Up</button>
         </div>
     );
 };
 
-export default SignUp;
+export default Signup;
