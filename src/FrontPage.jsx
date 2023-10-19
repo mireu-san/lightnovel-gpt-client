@@ -1,20 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import './styles/FrontPage.css';
 import Header from './components/Header';
 import Body from './components/Body';
 import Footer from './components/Footer';
 import { Link } from 'react-router-dom';
 import Logout from './modules/logout'; 
+import { AuthContext } from './AuthContext';
 
 const FrontPage = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
 
-    useEffect(() => {
-        const token = localStorage.getItem('access_token');
-        if (token) {
-            setIsLoggedIn(true);
-        }
-    }, []);
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, [setIsLoggedIn]);
 
     return (
         <>
