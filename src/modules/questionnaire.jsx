@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useApi } from './api';
+import { AuthContext } from '../AuthContext';
 
 const Questionnaire = () => {
   const [inputValues, setInputValues] = useState({
@@ -25,9 +26,16 @@ const Questionnaire = () => {
     }));
   };
 
+  const { isLoggedIn } = useContext(AuthContext);  // Get the isLoggedIn value from AuthContext
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitted(true);
+
+    if (!isLoggedIn) {  // Check if the user is logged in
+      alert('먼저 로그인 후 이용하세요');  // Show an alert if the user is not logged in
+      return;  // Exit the function to prevent further processing
+    }
     
     if (!inputValues.input1 || !inputValues.input2 || !inputValues.input3) {
       setIsIncomplete(true);
