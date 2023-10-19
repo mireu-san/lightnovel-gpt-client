@@ -5,12 +5,12 @@ import '../styles/logIn.css';
 
 const Login = () => {
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');  // Add password state
+    const [password, setPassword] = useState('');
     
     const navigate = useNavigate();
 
     const handleLogin = () => {
-        axios.post('http://localhost/users/api/token/', {
+        axios.post('http://localhost/users/users/login/', {
             username: username,
             password: password  // Send password data
         })

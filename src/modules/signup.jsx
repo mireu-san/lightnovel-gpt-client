@@ -7,12 +7,12 @@ const Signup = () => {
     const [password, setPassword] = useState('');
 
     const handleSignup = () => {
-        axios.post('http://localhost/users/signup/', {
+        axios.post('http://localhost/users/users/signup/', {
             username: username,
             password: password
         }, {
             headers: {
-                "Content-Type": "application/json",  // Add this line
+                "Content-Type": "application/json",
             }
         })
         .then(() => {

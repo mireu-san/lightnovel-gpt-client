@@ -54,7 +54,7 @@ export const useApi = () => {
         console.log("Token has expired. Trying to refresh...");
 
         try {
-            const response = await axios.post('http://localhost/users/api/token/refresh/', {
+            const response = await axios.post('http://localhost/users/users/token/refresh/', {
                 refresh: refreshToken
             });
             
