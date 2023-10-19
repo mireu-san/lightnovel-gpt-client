@@ -18,7 +18,7 @@ const Signup = () => {
             }
         })
         .then(() => {
-            alert('Signup successful!');
+            alert('Signup successful! You can now log in with it.');
             navigate('/');
         })
         .catch((error) => {
