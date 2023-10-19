@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate
 import '../styles/signUp.css';
 
 const Signup = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();  // Initialize useNavigate
 
     const handleSignup = () => {
         axios.post('http://localhost/users/users/signup/', {
@@ -16,7 +18,8 @@ const Signup = () => {
             }
         })
         .then(() => {
-            alert('Signup successful, please check your email for a verification link.');
+            alert('Signup successful!');
+            navigate('/');
         })
         .catch((error) => {
             if (error.response && error.response.data) {
