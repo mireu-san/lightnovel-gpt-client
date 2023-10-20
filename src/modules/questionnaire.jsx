@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import { useApi } from './api';
 import { AuthContext } from '../AuthContext';
+import axios from 'axios';
 
 const Questionnaire = () => {
   const [inputValues, setInputValues] = useState({
@@ -12,12 +13,8 @@ const Questionnaire = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isIncomplete, setIsIncomplete] = useState(false);
   const { apiPost } = useApi();
-
-  // 새 상태 변수 추가 - prompt 및 response 용.
   const [chat, setChat] = useState({ prompt: '', response: '' });
-
-
-
+  
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setInputValues((prevValues) => ({
@@ -26,47 +23,62 @@ const Questionnaire = () => {
     }));
   };
 
-  const { isLoggedIn } = useContext(AuthContext);  // Get the isLoggedIn value from AuthContext
+  const { isLoggedIn } = useContext(AuthContext);
+
+  const checkTaskResult = async (task_id) => {
+    try {
+      const result = await axios.get(`http://localhost/chatbot/task-result/${task_id}/`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
+      console.log(result.data);  // Log the entire data object
+      if (result.data && result.data.status !== 'PENDING') {  // Check for a non-PENDING status
+        console.log("Received non-PENDING response:", result.data);
+        setChat({
+          prompt: inputValues.input1 + '. ' + inputValues.input2 + '. ' + inputValues.input3 + '.',
+          response: result.data.result  // Adjusted based on the actual data structure
+        });
+        setIsLoading(false);  // Set isLoading to false once the task is completed
+      } else {
+        console.log("Received PENDING response:", result.data);
+        // Introduce a fixed delay before making the next check
+        setTimeout(() => checkTaskResult(task_id), 5000);  // 5 second delay
+      }
+    } catch (error) {
+      console.log("Error fetching task result:", error);
+      setIsLoading(false);  // Set isLoading to false in case of an error
+    }
+  };
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitted(true);
 
-    if (!isLoggedIn) {  // Check if the user is logged in
-      alert('먼저 로그인 후 이용하세요');  // Show an alert if the user is not logged in
-      return;  // Exit the function to prevent further processing
+    if (!isLoggedIn) {
+      alert('먼저 로그인 후 이용하세요');
+      return;
     }
-    
+
     if (!inputValues.input1 || !inputValues.input2 || !inputValues.input3) {
       setIsIncomplete(true);
       return;
     }
-    
+
     setIsIncomplete(false);
+    console.log('Setting isLoading to true');
     setIsLoading(true);
 
-    // 메인 화면의 질문지를 작성하고 제출하면, 서버로 질문지 내용을 보내고, 서버로부터 응답을 받아서 화면에 표시하는 코드.
     try {
       const combinedQuestion = `${inputValues.input1}. ${inputValues.input2}. ${inputValues.input3}.`;
       const apiResult = await apiPost(combinedQuestion);
       console.log("서버로부터 받은 응답:", apiResult);
-      
-      // Update chat state here
-      setChat({
-        prompt: apiResult.prompt,
-        response: apiResult.response
-      });
-    
-      setInputValues({
-        input1: '',
-        input2: '',
-        input3: '',
-      });
+      checkTaskResult(apiResult.task_id);  // Start checking for the task result
     } catch (err) {
       console.log("API 호출 중 문제 발생. 확인해주세요.", err);
-    } finally {
-      setIsLoading(false);
-    }
+    }  // removed the finally block here
   };
     
 
@@ -119,7 +131,6 @@ const Questionnaire = () => {
           {chat.response && <li className="response">답변: {chat.response}</li>}
         </ul>
       </div>
-
     </form>
   );  
 };
