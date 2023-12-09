@@ -32,3 +32,6 @@ Source: https://www.freecodecamp.org/news/how-to-write-better-git-commit-message
 
 ## Note
 주요 핵심 기능이 담긴 파일은 FrontPage, questionnaire, api 입니다.
+
+### Todo
+- SSR 적용 (https://vitejs.dev/guide/ssr.html)

@@ -27,8 +27,8 @@ const FrontPage = () => {
                     <Logout />
                 ) : (
                     <>
-                        <Link className="frontPage-login" to="/login">Login</Link>
-                        <Link className="frontPage-signUp" to="/signup">Sign Up</Link>
+                        <Link className="frontPage_login" to="/login">Login</Link>
+                        <Link className="frontPage_signUp" to="/signup">Sign Up</Link>
                     </>
                 )}
             </div>
