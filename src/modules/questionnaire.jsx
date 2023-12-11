@@ -2,6 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 import { useApi } from './api';
 import { AuthContext } from '../AuthContext';
 import axios from 'axios';
+import { useCallback } from 'react';
 
 const Questionnaire = () => {
   const [inputValues, setInputValues] = useState({ input1: '' });
@@ -13,6 +14,11 @@ const Questionnaire = () => {
   const [chat, setChat] = useState({ prompt: '', response: '' });
   const { isLoggedIn } = useContext(AuthContext);
 
+  // Function to update chat history after receiving a new message
+  const updateChatHistory = (newChat) => {
+    setChatHistory(prevHistory => [...prevHistory, newChat]);
+  };
+
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setInputValues((prevValues) => ({
@@ -21,24 +27,29 @@ const Questionnaire = () => {
     }));
   };
 
-  useEffect(() => {
-    const fetchChatHistory = async () => {
-      if (isLoggedIn) {
-        try {
-          const response = await axios.get(`http://localhost/chatbot/history/`, {
-            headers: {
-              "Authorization": `Bearer ${localStorage.getItem('access_token')}`,
-            },
-          });
-          setChatHistory(response.data.chat_history);
-        } catch (error) {
-          console.error('Error fetching chat history:', error);
-        }
-      }
-    };
+  // Function to fetch chat history from the backend
 
-    fetchChatHistory();
+
+  // used useCallback to avoid unnecessary re-renders
+  const fetchChatHistory = useCallback(async () => {
+    if (isLoggedIn) {
+      try {
+        const response = await axios.get(`http://localhost/chatbot/history/`, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        });
+        setChatHistory(response.data.chat_history); // Assuming the backend returns a 'chat_history' key
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+      }
+    }
   }, [isLoggedIn]);
+
+  // Fetch chat history when the component mounts or when the isLoggedIn state changes
+  useEffect(() => {
+    fetchChatHistory();
+  }, [isLoggedIn, fetchChatHistory]);
 
   const checkTaskResult = async (task_id) => {
     try {
@@ -47,22 +58,24 @@ const Questionnaire = () => {
           "Authorization": `Bearer ${localStorage.getItem('access_token')}`,
         },
       });
-      console.log(result.data);  // Log the entire data object
-      if (result.data && result.data.status !== 'PENDING') {  // Check for a non-PENDING status
-        console.log("Received non-PENDING response:", result.data);
-        setChat({
+      console.log(result.data); // Log the entire data object
+      if (result.data && result.data.status === 'SUCCESS') {
+        console.log("Received SUCCESS response:", result.data);
+        const newChat = {
           prompt: inputValues.input1,
-          response: result.data.result  // Adjusted based on the actual data structure
-        });
-        setIsLoading(false);  // Set isLoading to false once the task is completed
-      } else {
+          response: result.data.result // Adjusted based on the actual data structure
+        };
+        setChat(newChat);
+        updateChatHistory(newChat); // Update chat history with the new chat
+        setIsLoading(false); // Set isLoading to false once the task is completed
+        fetchChatHistory(); // Refetch chat history to include the latest message
+      } else if (result.data.status === 'PENDING') {
         console.log("Received PENDING response:", result.data);
-        // Introduce a fixed delay before making the next check
-        setTimeout(() => checkTaskResult(task_id), 5000);  // 5 second delay
+        setTimeout(() => checkTaskResult(task_id), 5000); // 5 second delay
       }
     } catch (error) {
       console.log("Error fetching task result:", error);
-      setIsLoading(false);  // Set isLoading to false in case of an error
+      setIsLoading(false); // Set isLoading to false in case of an error
     }
   };
 
@@ -92,8 +105,6 @@ const Questionnaire = () => {
       setIsLoading(false);
     }
   };
-
-    
 
   return (
     <>
