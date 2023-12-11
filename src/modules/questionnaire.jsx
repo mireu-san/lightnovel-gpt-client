@@ -36,7 +36,8 @@ const Questionnaire = () => {
       if (result.data && result.data.status !== 'PENDING') {  // Check for a non-PENDING status
         console.log("Received non-PENDING response:", result.data);
         setChat({
-          prompt: inputValues.input1 + '. ' + inputValues.input2 + '. ' + inputValues.input3 + '.',
+          // prompt: inputValues.input1 + '. ' + inputValues.input2 + '. ' + inputValues.input3 + '.',
+          prompt: inputValues.input1,
           response: result.data.result  // Adjusted based on the actual data structure
         });
         setIsLoading(false);  // Set isLoading to false once the task is completed
