@@ -62,7 +62,8 @@ const Questionnaire = () => {
       return;
     }
 
-    if (!inputValues.input1 || !inputValues.input2 || !inputValues.input3) {
+    // if (!inputValues.input1 || !inputValues.input2 || !inputValues.input3) {
+    if (!inputValues.input1) {
       setIsIncomplete(true);
       return;
     }
@@ -72,7 +73,8 @@ const Questionnaire = () => {
     setIsLoading(true);
 
     try {
-      const combinedQuestion = `${inputValues.input1}. ${inputValues.input2}. ${inputValues.input3}.`;
+      // const combinedQuestion = `${inputValues.input1}. ${inputValues.input2}. ${inputValues.input3}.`;
+      const combinedQuestion = `${inputValues.input1}`;
       const apiResult = await apiPost(combinedQuestion);
       console.log("서버로부터 받은 응답:", apiResult);
       checkTaskResult(apiResult.task_id);  // Start checking for the task result
@@ -85,8 +87,16 @@ const Questionnaire = () => {
   return (
     <form id="questionnaire" onSubmit={handleSubmit}>
       <div className="threeQ">
-        <h3>1. 좋아하는 장르가 뭔지 말해주세요.</h3>
+        <h3>대화를 시작해볼까요? 좋아하는 장르, 라이트 노벨 제목 등 추천 받고 싶은 내용을 얘기해보세요.</h3>
         <input
+          type="text"
+          id="input1"
+          value={inputValues.input1}
+          onChange={handleInputChange}
+          placeholder="어떤 작품에 대해 이야기 해 볼까요?"
+        />
+        {/* <h3>1. 좋아하는 장르가 뭔지 말해주세요.</h3> */}
+        {/* <input
           type="text"
           id="input1"
           value={inputValues.input1}
@@ -108,7 +118,7 @@ const Questionnaire = () => {
           value={inputValues.input3}
           onChange={handleInputChange}
           placeholder="어느쪽이든요 or 밝은 분위기면 좋겠어요!"
-        />
+        /> */}
         <br />
       </div>
       <div className="submitSection">
