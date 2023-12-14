@@ -249,3 +249,29 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+#questionnaire #chat-container
+.chat-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.chat-history {
+  width: 30%; /* Adjust width as needed */
+  overflow-y: auto; /* Enable scrolling */
+  /* border-right: 1px solid #ccc; Separator, reactivate this bar if chat text is placed to right side. */
+}
+
+.chat-interface {
+  width: 70%; /* Adjust width as needed */
+  /* Additional styling for chat interface */
+}
+
+/* Additional styling for prompt and response */
+.prompt {
+  font-weight: bold;
+}
+
+.response {
+  margin-bottom: 10px;
+}

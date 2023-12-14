@@ -13,6 +13,8 @@ const Questionnaire = () => {
   const { apiPost } = useApi();
   const [chat, setChat] = useState({ prompt: '', response: '' });
   const { isLoggedIn } = useContext(AuthContext);
+  // chat history
+  const [selectedChat, setSelectedChat] = useState(null);
 
   // Function to update chat history after receiving a new message
   const updateChatHistory = (newChat) => {
@@ -34,7 +36,7 @@ const Questionnaire = () => {
   const fetchChatHistory = useCallback(async () => {
     if (isLoggedIn) {
       try {
-        const response = await axios.get(`http://localhost/chatbot/history/`, {
+        const response = await axios.get(`http://localhost/chatbot/api/chat/`, {
           headers: {
             "Authorization": `Bearer ${localStorage.getItem('access_token')}`,
           },
@@ -106,6 +108,12 @@ const Questionnaire = () => {
     }
   };
 
+  // chat history
+  const handleChatHistoryClick = (historyItem) => {
+    // When a chat history item is clicked, set the selected chat for display
+    setSelectedChat(historyItem);
+  };
+
   return (
     <>
       <form id="questionnaire" onSubmit={handleSubmit}>
@@ -135,21 +143,35 @@ const Questionnaire = () => {
         {chat.response && <p>답변: {chat.response}</p>}
       </div>
 
-      {/* Display for chat history */}
-      <div className="chat-history">
-        <h2>Chat History:</h2>
-        {chatHistory.length > 0 ? (
+      {/* Chat history and chat interface containers */}
+      <div className="chat-container">
+        {/* Chat history sidebar */}
+        <div className="chat-history">
+          <h2>Chat History</h2>
           <ul>
-            {chatHistory.map((historyItem, index) => (
-              <li key={index}>
-                <div><strong>Prompt:</strong> {historyItem.prompt}</div>
-                <div><strong>Response:</strong> {historyItem.response}</div>
-              </li>
-            ))}
+            {chatHistory.length > 0 ? (
+              chatHistory.map((historyItem, index) => (
+                <li key={index} onClick={() => handleChatHistoryClick(historyItem)}>
+                  {/* Display a preview (first 10 characters) of the chat response */}
+                  <div>{historyItem.response.slice(0, 10)}...</div>
+                </li>
+              ))
+            ) : (
+              <p>No chat history to display.</p>
+            )}
           </ul>
-        ) : (
-          <p>No chat history to display.</p>
-        )}
+        </div>
+        {/* Detailed view of the selected chat */}
+        <div className="chat-interface">
+          {selectedChat ? (
+            <>
+              <p><strong>Prompt:</strong> {selectedChat.prompt}</p>
+              <p><strong>Response:</strong> {selectedChat.response}</p>
+            </>
+          ) : (
+            <p>Select a chat to view the conversation.</p>
+          )}
+        </div>
       </div>
     </>
   );
