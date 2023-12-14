@@ -41,7 +41,7 @@ const Questionnaire = () => {
             "Authorization": `Bearer ${localStorage.getItem('access_token')}`,
           },
         });
-        setChatHistory(response.data.chat_history); // Assuming the backend returns a 'chat_history' key
+        setChatHistory(response.data.chat_history);
       } catch (error) {
         console.error('Error fetching chat history:', error);
       }
