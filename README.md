@@ -4,8 +4,7 @@
 - This web app uses chatgpt to assist you finding a favourite light novel to anime contents based on your input values. Please contact me via email if you need any inquiry regarding this project in English.
 
 ## 현재 진행 중 작업
--  기존 기능들이 제대로 작동하도록 client 리팩터링.
-- redis + celery worker 의 조합으로, django 의 처리 과정을 메모리 실행을 통해 API 로 부터 받아와서 다시 client 로 보내는 프로세스의 반응 속도를 향상 시키는 것.
+- 다음 링크를 참고바랍니다. [개선 작업 이슈 기록](https://github.com/mireu-san/lightnovel-gpt-client/issues/2)
 
 
 
